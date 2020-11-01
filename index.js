@@ -5,7 +5,7 @@ const multer = require('multer');
 const cors = require("cors");
 const fleekStorage = require('@fleekhq/fleek-storage-js')
 const mongoose = require("mongoose");
-
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 
 const MLAB_URI = process.env.MLAB_URI || "mongodb+srv://john:12345qwerty@cluster0-tnors.mongodb.net/AltNews?retryWrites=true&w=majority";
@@ -110,9 +110,57 @@ User.findOne({ cryptoaddress: cryptoaddress }, function (err, User) {
   res.json(User);
 }).populate("availableAds");
 
-
 });
 
+//create posts
+app.post("/post", async (req,res) => {
+
+const id = req.body.id;
+
+console.log(req.body)
+//New 
+if(id === 'null')
+{
+  var post ;
+ if(req.body.status === "d")
+ {
+ post = new Post({ status: 1, title: req.body.title, user : new mongoose.Types.ObjectId( req.body.user ), post :req.body.post   });
+ }else
+ {
+
+  post =new Post(req.body);
+ }
+
+
+ post.save((err, oPost) => {
+  if (err) {
+    res.json({ error: "invalid POST body" });
+    return console.log(err);
+  }
+  res.json({ id : oPost.id , status : oPost.status  });
+});
+
+
+  return;
+}
+
+
+
+})
+
+//retreive posts
+app.get("/post", async (req,res) =>{
+
+var user = req.query.user;
+
+var posts =  await Post.find({ user : new mongoose.Types.ObjectId( user ) } ).exec();
+
+if(!!posts)
+  res.json(posts);
+else
+res.send([]);
+
+})
 
 
 app.post('/uploadfile', upload.single('adImage'), async (req, res, next) => {
@@ -134,6 +182,8 @@ app.post('/uploadfile', upload.single('adImage'), async (req, res, next) => {
   res.send("file received");
 
 })
+
+
 
 
 //Server start

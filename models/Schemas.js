@@ -14,8 +14,8 @@ var Post = new Schema({
     post : String,
     title : String,
     status : Number,
-    likes : Number,
-    views : Number,
+    likes :{type : Number, default: 0},
+    views : {type : Number, default: 0},
     postDate : Date,
     coverImageHash: String,
     user: {type : ObjectId, ref : 'User'}
