@@ -68,7 +68,7 @@ app.get('/', function(req, res) {
 */
 
 //Register (more like record) New User
-app.post("/registerUser", (req,res) => {
+app.post("/registerUser" ,upload.array(), (req,res) => {
   var sUsername = req.body.username || "";
   console.log(req.body);
   if (  ! (req.body.cryptoaddress )  ) {

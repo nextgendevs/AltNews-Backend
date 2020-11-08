@@ -14,6 +14,7 @@ var Advt = new Schema({
 var Post = new Schema({
     post : String,
     title : String,
+    short: String,
     status : String,
     likes :{type : Number, default: 0},
     views : {type : Number, default: 0},
