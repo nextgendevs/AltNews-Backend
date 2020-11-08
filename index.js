@@ -133,7 +133,7 @@ app.post("/post", upload.array(), async (req,res) => {
 
   oPost = await oPost.populate("Ad").execPopulate();
   console.log(oPost);
-  if(oPost.Ad)
+  if(oPost.Ad  && oPost.post.search(oPost.Ad.hash) >= 0 )
   {//Logic to convert the status 
 let oCAd = oPost.Ad;
 
@@ -386,7 +386,7 @@ app.get("/getClaimableAds" , async (req,res)=> {
 var benCrypto = req.query.CryptoAddress,
 status = req.query.status
 
-var filterOptns = {Beneficiary : benCrypto};
+var filterOptns = {Beneficiary : benCrypto };
 
 if(status)
 filterOptns.status = status;
