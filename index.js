@@ -296,7 +296,7 @@ let uploadtoFleek = async (file, fileKey) => {
     data: file.buffer
   });
 
-  Advt.find({ fileKey : fileKey }, (err, oAdvt)=> {
+  Advt.find({ fileKey : fileKey },async (err, oAdvt)=> {
     if(err)
     {
     console.log(err);
