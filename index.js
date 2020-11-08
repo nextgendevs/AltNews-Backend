@@ -24,8 +24,8 @@ mongoose.connect(MLAB_URI, {
 
 const {  User , ClaimbleAds, Advt,  Post } = require("./models/Schemas");
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true, limit:'5mb'}));
+app.use(bodyParser.json({limit:'5mb'}));
 
 
 
@@ -131,15 +131,21 @@ app.post("/post", upload.array(), async (req,res) => {
     return console.log(err);
   }
 
-  oPost = await oPost.populate("Ad").execPopulate();
-  console.log(oPost);
-  if(oPost.Ad  && oPost.post.search(oPost.Ad.hash) >= 0 )
+ // var oAd =
+  await oPost.populate({path : "Ad", populate : [{ path : "Ad" }]}).execPopulate();
+ 
+
+  if(oPost  && oPost.post.search(oPost.Ad.Ad.hash) >= 0 )
   {//Logic to convert the status 
 let oCAd = oPost.Ad;
+oCAd.Ad = new mongoose.Types.ObjectId(  oCAd.Ad._id );
+
+//console.log(oCAd)
 
 oCAd.status = "r";
 
 oCAd.save((err, oAd)=> {
+  console.log(oAd)
   if (err) {
     res.json({ error: "invalid POST body" });
     return console.log(err);
@@ -210,9 +216,6 @@ app.get("/postbyId", async (req,res) => {
 app.post("/createAd", upload.single('adImage'),  async (req, res, next) => {
 
   const file = req.file;
-
-
-  
 
   const fileKey =  uploadToIPFS(file, next);
 
@@ -288,6 +291,7 @@ function uploadToIPFS(file,next) {
 
 //update hash async
 let uploadtoFleek = async (file, fileKey) => {
+  var sfileKey = fileKey;
 
   var UploadedFile = await fleekStorage.upload({
     apiKey: 'uE0fQtHtzBL3M/4lR5+ZZA==',
@@ -296,16 +300,18 @@ let uploadtoFleek = async (file, fileKey) => {
     data: file.buffer
   });
 
-  Advt.find({ fileKey : fileKey },async (err, oAdvt)=> {
+
+  Advt.find({ fileKey : sfileKey },async (err, oAdvt)=> {
+    console.log(oAdvt)
     if(err)
     {
     console.log(err);
     return;
     }
 
-    oAdvt.hash = UploadedFile.hash;
+    oAdvt[0].hash = UploadedFile.hash;
 
-   await oAdvt.save();
+   await oAdvt[0].save();
 
   })
 
