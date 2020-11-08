@@ -347,7 +347,7 @@ docs = Advt.find(oFilterOptions,
 });
 
 
-app.post("/createClaimableAd" , async (req,res) => {
+app.post("/createClaimableAd",upload.array() , async (req,res) => {
 var destCrypto  = req.body.dest;
 
 var newClaimableAd = new ClaimbleAds({
@@ -381,7 +381,7 @@ app.post('/uploadfile', upload.single("imageAd"), async (req, res, next) => {
 
 });
 
-//Get all ads available to user based on status
+//Get all ads available to authors based on status
 app.get("/getClaimableAds" , async (req,res)=> {
 var benCrypto = req.query.CryptoAddress,
 status = req.query.status
@@ -398,11 +398,12 @@ ClaimbleAds.find(filterOptns, (err, aClaimableAds)=> {
   }
 
   res.json(aClaimableAds);
+}).populate({
+  path: "Ad", 
+  select : "hash title description -_id"
 })
 
 });
-
-
 
 
 //Server start
