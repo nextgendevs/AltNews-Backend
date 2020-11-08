@@ -24,7 +24,7 @@ mongoose.connect(MLAB_URI, {
 
 const {  User , ClaimbleAds, Advt,  Post } = require("./models/Schemas");
 
-app.use(bodyParser.urlencoded({extended:true, limit:'5mb'}));
+app.use(bodyParser.urlencoded({extended:true, limit:'5mb',parameterLimit: 1000000 }));
 app.use(bodyParser.json({limit:'5mb'}));
 
 
