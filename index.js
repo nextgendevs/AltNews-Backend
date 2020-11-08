@@ -211,9 +211,12 @@ app.post("/createAd", upload.single('adImage'),  async (req, res, next) => {
 
   const file = req.file;
 
+
+  
+
   const fileKey =  uploadToIPFS(file, next);
 
-  console.log(fileKey);
+ // console.log(fileKey);
   var oAdvt = new Advt({
     title: req.body.title,
     description : req.body.description,
@@ -277,15 +280,38 @@ function uploadToIPFS(file,next) {
   }
 
   let fileKey = 'Image' + Date.now();
-  fleekStorage.upload({
+  
+  uploadtoFleek(file, fileKey);
+
+  return fileKey;
+}
+
+//update hash async
+let uploadtoFleek = async (file, fileKey) => {
+
+  var UploadedFile = await fleekStorage.upload({
     apiKey: 'uE0fQtHtzBL3M/4lR5+ZZA==',
     apiSecret: 'uZL1QfOW0KSiqOBqSGi5X5UQ2M4HEQDmpGsVIdf7RWk=',
     key: fileKey,
     data: file.buffer
   });
 
-  return fileKey;
+  Advt.find({ fileKey : fileKey }, (err, oAdvt)=> {
+    if(err)
+    {
+    console.log(err);
+    return;
+    }
+
+    oAdvt.hash = UploadedFile.hash;
+
+   await oAdvt.save();
+
+  })
+
+
 }
+
 
 //Get all ads with/without hash
 app.get("/getAllAds", async (req,res)=> {
