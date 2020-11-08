@@ -6,24 +6,29 @@ var Advt = new Schema({
     title : String,
     description : String,
     hash : String,
+    fileKey: String,
     sponser : {type : ObjectId, ref : 'User'}
 })
 
-//Status : 1 for Draft, 2 for Published
+//Status : d for Draft, p for Published
 var Post = new Schema({
     post : String,
     title : String,
-    status : Number,
+    status : String,
     likes :{type : Number, default: 0},
     views : {type : Number, default: 0},
     postDate : Date,
     coverImageHash: String,
+    Ad : {type : ObjectId, ref : 'ClaimbleAds'},
     user: {type : ObjectId, ref : 'User'}
 })
 
+
+//status : u- unclaimed, r-readyForClaim,  c - claimed
 var ClaimbleAds = new Schema({
     claimId : String,
-    Ad : {type : ObjectId, ref : 'User'},
+    status: String,
+    Ad : {type : ObjectId, ref : 'Advt'},
     Beneficiary : String
 })
 
